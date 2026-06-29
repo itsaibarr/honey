@@ -1,26 +1,125 @@
 @import "tailwindcss";
 
+/* ── Pigeon Post · golden-hour theme ───────────────────────────────── */
+@theme {
+  /* warm palette pulled from the mood board: honey light → terracotta → dusk */
+  --color-glow: #f7d59b;
+  --color-honey: #ecae6a;
+  --color-amber: #d98a55;
+  --color-terracotta: #b3614a;
+  --color-rose: #cf8d83;
+  --color-peony: #ecb6bd; /* her favorite flower */
+  --color-cream: #f7eeda; /* parchment / letter paper */
+  --color-ink: #4a3326; /* letter ink */
+  --color-dusk: #3a221d; /* deep warm shadow */
+
+  --font-serif: var(--font-eb), Georgia, "Times New Roman", serif;
+  --font-hand: var(--font-caveat), ui-rounded, cursive;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html,
+body {
+  height: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  color: var(--color-cream);
+  font-family: var(--font-serif);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  /* golden-hour light, fixed so it stays put as content scrolls.
+     Deep + warm so light text keeps contrast everywhere; a soft sun-glow
+     highlight near the top keeps the golden-hour feel without washing text out. */
+  background:
+    radial-gradient(
+      80% 50% at 50% -10%,
+      rgba(249, 220, 165, 0.45) 0%,
+      rgba(249, 220, 165, 0) 62%
+    ),
+    linear-gradient(
+      180deg,
+      #c5763e 0%,
+      #b56a43 24%,
+      #95513f 50%,
+      #6b3c33 76%,
+      #371f1c 100%
+    );
+  background-attachment: fixed;
+}
+
+/* soft film vignette — darkens the edges like old photographs */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  background: radial-gradient(
+    120% 90% at 50% 38%,
+    transparent 55%,
+    rgba(40, 22, 18, 0.4) 100%
+  );
+}
+
+/* soft dark halo so light text stays readable on the warm background */
+.legible {
+  text-shadow:
+    0 1px 3px rgba(40, 22, 18, 0.55),
+    0 0 1px rgba(40, 22, 18, 0.5);
+}
+
+/* fine film grain overlay */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 41;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 160px 160px;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.fade-in {
+  animation: fade-in 0.5s ease both;
+}
+
+.rise {
+  animation: rise 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }
