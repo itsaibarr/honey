@@ -36,6 +36,13 @@ yarn-error.log*
 # vercel
 .vercel
 
+# local dev database (PGlite store)
+/.data
+
+# Claude Code local settings (machine-local; may capture command history)
+.claude/settings.local.json
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+.gstack/
