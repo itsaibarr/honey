@@ -1,36 +1,59 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Голубиная почта / Pigeon Post
 
-## Getting Started
+Pigeon Post lets one author pre-write letters that "land" one per morning in the
+private mailbox of one recipient on a road trip with almost no internet. She opens
+a secret link, sees which pigeons are still in flight and when they arrive, reads
+landed letters through a GSAP arrival animation, and keeps them in an archive
+that the service worker serves offline.
 
-First, run the development server:
+Status: one-off from June 2026, not maintained
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Run
+
+With no `DATABASE_URL` set, the app runs on an embedded PGlite database in `.data/honey` and applies migrations on first use.
+
+```
+npm install
+npm run db:setup        # creates the recipient, writes AUTHOR_TOKEN and links to .env.local
+npm run dev -- -p 3100  # the setup script prints links assuming port 3100
+npm test                # vitest, lib/letters
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open the printed `/loft/<token>` link to write letters and the `/m/<token>` link
+to read them. Letters land at 08:00 in the recipient's timezone.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Env vars read by the code:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Var | Used for |
+| --- | --- |
+| `AUTHOR_TOKEN` | gates `/loft/<token>` (set by `db:setup`) |
+| `DATABASE_URL` | Postgres for prod (Neon); omit for local PGlite |
+| `RESEND_API_KEY`, `EMAIL_FROM` | daily digest email via Resend |
+| `RECIPIENT_EMAIL`, `RECIPIENT_URL` or `APP_BASE_URL` | digest target and link |
+| `CRON_SECRET` | if set, `/api/cron/digest` requires `Authorization: Bearer <secret>` |
+| `RECIPIENT_NAME`, `RECIPIENT_TZ` | defaults for `db:setup` |
 
-## Learn More
+Production: `DATABASE_URL=... npm run db:migrate`, then
+`DATABASE_URL=... npm run db:setup` and copy the printed tokens into Vercel env.
+`vercel.json` schedules `/api/cron/digest` at 06:00 UTC daily. `npm run db:smoke`
+seeds three letters and prints their flight status.
 
-To learn more about Next.js, take a look at the following resources:
+## Layout
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Path | What lives there |
+| --- | --- |
+| `app/loft/[token]` | author composer. Create, edit, and delete undelivered letters |
+| `app/m/[token]` | recipient mailbox. In-flight ETAs, landed letters, and the archive |
+| `app/api/cron/digest` | Resend digest for landed-unread letters |
+| `app/manifest.ts`, `public/sw.js` | PWA manifest and offline service worker |
+| `components/Ceremony.tsx` | GSAP arrival animation with reduced-motion fallback |
+| `lib/letters` | flight status, categorize, Russian ETA labels, with the only tests |
+| `lib/db`, `lib/auth`, `lib/email`, `lib/time` | schema and migrations, token hashing, digest, timezone math |
+| `scripts/` | `db-smoke.ts`, `setup-dev.ts`, `migrate.ts` |
+| `specs/SPEC.md` | original product and technical spec |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Not done
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- The digest mails `RECIPIENT_EMAIL` from env and counts letters across all recipients; the `recipients.email` column is written by `db:setup` but never read.
+- Offline reading covers only the last mailbox page the service worker cached. The IndexedDB letter cache in the spec was not built.
+- Spec items deferred to later: reply pigeons (the `direction` enum exists, nothing writes `to_you`), photo or voice attachments, web push.
