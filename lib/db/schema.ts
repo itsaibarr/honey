@@ -13,14 +13,14 @@ import {
  */
 export const letterDirection = pgEnum("letter_direction", ["to_her", "to_you"]);
 
-/** A single person who receives pigeons. MVP has exactly one row: Amira. */
+/** A single person who receives pigeons. MVP has exactly one row (RECIPIENT_NAME). */
 export const recipients = pgTable("recipients", {
   id: uuid("id").defaultRandom().primaryKey(),
   name: text("name").notNull(),
   email: text("email"),
-  // her local timezone — "morning" deliveries are anchored to this
-  timezone: text("timezone").notNull().default("Asia/Almaty"),
-  // sha-256 of her unguessable secret-link token (never store the raw token)
+  // recipient's local timezone — "morning" deliveries are anchored to this
+  timezone: text("timezone").notNull().default("UTC"),
+  // sha-256 of the recipient's unguessable secret-link token (never store the raw token)
   tokenHash: text("token_hash").notNull().unique(),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()

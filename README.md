@@ -22,7 +22,7 @@ npm test                # vitest, lib/letters
 Open the printed `/loft/<token>` link to write letters and the `/m/<token>` link
 to read them. Letters land at 08:00 in the recipient's timezone.
 
-Env vars read by the code:
+Env vars read by the code (see `.env.example` for placeholders):
 
 | Var | Used for |
 | --- | --- |
@@ -54,6 +54,6 @@ seeds three letters and prints their flight status.
 
 ## Not done
 
-- The digest mails `RECIPIENT_EMAIL` from env and counts letters across all recipients; the `recipients.email` column is written by `db:setup` but never read.
+- The digest mails the first recipient's `recipients.email` (falling back to `RECIPIENT_EMAIL` from env) and counts letters across all recipients rather than per-recipient.
 - Offline reading covers only the last mailbox page the service worker cached. The IndexedDB letter cache in the spec was not built.
 - Spec items deferred to later: reply pigeons (the `direction` enum exists, nothing writes `to_you`), photo or voice attachments, web push.

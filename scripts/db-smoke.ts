@@ -1,6 +1,6 @@
 /**
  * M1 smoke test: prove the data layer end-to-end.
- * Creates Amira + a daily-drip journey of 3 letters, reads them back, and
+ * Creates the recipient + a daily-drip journey of 3 letters, reads them back, and
  * derives flight status (landed vs in-flight) the way the recipient view will.
  *
  * Run: npm run db:smoke
@@ -20,12 +20,12 @@ async function main() {
   await db.delete(journeys);
   await db.delete(recipients);
 
-  const [amira] = await db
+  const [recipient] = await db
     .insert(recipients)
     .values({
-      name: "Amira",
+      name: process.env.RECIPIENT_NAME || "Someone",
       email: null,
-      timezone: "Asia/Almaty",
+      timezone: process.env.RECIPIENT_TZ || "UTC",
       tokenHash: "dev-smoke-recipient",
     })
     .returning();
@@ -33,7 +33,7 @@ async function main() {
   const [journey] = await db
     .insert(journeys)
     .values({
-      recipientId: amira.id,
+      recipientId: recipient.id,
       title: "Дорога домой",
       startDate: "2026-06-30",
     })
@@ -43,21 +43,21 @@ async function main() {
   await db.insert(letters).values([
     {
       journeyId: journey.id,
-      recipientId: amira.id,
+      recipientId: recipient.id,
       senderName: "твой голубь",
-      body: "Первое письмо — уже прилетело. Доброе утро, любимая.",
+      body: "Первое письмо — уже прилетело. Доброе утро!",
       arriveAt: hoursFromNow(-2),
     },
     {
       journeyId: journey.id,
-      recipientId: amira.id,
+      recipientId: recipient.id,
       senderName: "твой голубь",
       body: "Второе письмо — в пути, прилетит завтра утром.",
       arriveAt: hoursFromNow(22),
     },
     {
       journeyId: journey.id,
-      recipientId: amira.id,
+      recipientId: recipient.id,
       senderName: "твой голубь",
       body: "Третье письмо — ещё летит.",
       arriveAt: hoursFromNow(46),
@@ -68,7 +68,7 @@ async function main() {
   all.sort((a, b) => +a.arriveAt - +b.arriveAt);
 
   const now = Date.now();
-  console.log(`\nMailbox for ${amira.name} (journey: ${journey.title}):\n`);
+  console.log(`\nMailbox for ${recipient.name} (journey: ${journey.title}):\n`);
   for (const l of all) {
     const landed = +l.arriveAt <= now;
     const tag = landed ? "🛬 landed     " : "🕊️  in flight  ";

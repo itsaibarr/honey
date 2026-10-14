@@ -26,7 +26,7 @@ CREATE TABLE "recipients" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"name" text NOT NULL,
 	"email" text,
-	"timezone" text DEFAULT 'Asia/Almaty' NOT NULL,
+	"timezone" text DEFAULT 'UTC' NOT NULL,
 	"token_hash" text NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	CONSTRAINT "recipients_token_hash_unique" UNIQUE("token_hash")

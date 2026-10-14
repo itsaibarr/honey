@@ -2,9 +2,9 @@
  * Timezone helpers with no external dependencies.
  *
  * Deliveries land at a civil "morning" time in the recipient's timezone, so we
- * need to convert "2026-07-01 08:00 in Asia/Almaty" into a precise UTC instant.
- * Kazakhstan has no DST, but this works for any fixed-offset zone and is correct
- * for DST zones except for the rare hour straddling a transition.
+ * need to convert "2026-07-01 08:00 in the recipient's tz" into a precise UTC
+ * instant. Fixed-offset zones (e.g. a UTC+5 zone with no DST) are exact; DST
+ * zones are correct except for the rare hour straddling a transition.
  */
 
 /** Offset (ms) of `timeZone` from UTC at the given instant: wallclock - utc. */
@@ -47,7 +47,7 @@ export function zonedToUtc(
   return new Date(guess - offset);
 }
 
-/** "2026-07-01" + 8 + "Asia/Almaty" -> the UTC Date for 08:00 that morning. */
+/** "2026-07-01" + 8 + "Europe/Paris" -> the UTC Date for 08:00 that morning. */
 export function localTimeUtc(
   isoDate: string,
   hour: number,

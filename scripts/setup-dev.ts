@@ -1,6 +1,7 @@
 /**
- * One-time dev setup: create/refresh the recipient (Amira) and print the two
- * secret links. Writes AUTHOR_TOKEN (+ a dev copy of her token) to .env.local.
+ * One-time dev setup: create/refresh the recipient (RECIPIENT_NAME, default
+ * "Someone") and print the two secret links. Writes AUTHOR_TOKEN (+ a dev copy
+ * of the recipient token) to .env.local.
  *
  * Run: npm run db:setup   (then restart the dev server to load AUTHOR_TOKEN)
  */
@@ -28,8 +29,8 @@ async function main() {
   const authorToken = generateToken();
   const recipientToken = generateToken();
 
-  const name = process.env.RECIPIENT_NAME || "Амира";
-  const timezone = process.env.RECIPIENT_TZ || "Asia/Almaty";
+  const name = process.env.RECIPIENT_NAME || "Someone";
+  const timezone = process.env.RECIPIENT_TZ || "UTC";
   const email = process.env.RECIPIENT_EMAIL || null;
   const base = process.env.APP_BASE_URL || "http://localhost:3100";
 

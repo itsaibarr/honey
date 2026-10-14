@@ -25,7 +25,8 @@ export default async function LoftPage({
 
   const db = await getDb();
   const [rec] = await db.select().from(recipients).limit(1);
-  const tz = rec?.timezone ?? "Asia/Almaty";
+  const tz = rec?.timezone ?? process.env.RECIPIENT_TZ ?? "UTC";
+  const recipientName = rec?.name ?? process.env.RECIPIENT_NAME ?? "Someone";
   const now = new Date();
 
   const rows = rec
@@ -46,6 +47,7 @@ export default async function LoftPage({
   return (
     <LoftClient
       token={token}
+      recipientName={recipientName}
       suggestedDate={nextDay(civilDateLocal(now, tz))}
       letters={view}
     />
