@@ -211,7 +211,7 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true,
-          "default": "'Asia/Almaty'"
+          "default": "'UTC'"
         },
         "token_hash": {
           "name": "token_hash",

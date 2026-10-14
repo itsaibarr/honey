@@ -1,17 +1,16 @@
 # 🕊️ Pigeon Post — Product & Technical Spec (Phase 1)
 
 > A playful, web-native "carrier-pigeon mail" experience: you compose letters, a pigeon
-> "delivers" them on a schedule with a delightful animation, and Amira receives a daily
-> surprise — even while she's on the road with almost no internet.
+> "delivers" them on a schedule with a delightful animation, and the recipient gets a daily
+> surprise — even while on the road with almost no internet.
 >
-> **Origin:** Amira is traveling across the country by car with her parents and will be
-> offline most of the time. When told *"I'll miss you,"* she replied
-> *"давай ты будешь мне письма голубями отправлять"* — "send me letters by pigeons."
-> This product literally fulfills that.
+> **Origin:** the recipient is traveling by car with intermittent connectivity. Asked what
+> would make the trip feel closer, the answer was "send me letters by pigeons" —
+> this product literally fulfills that.
 
 **Status:** Phase 1 (spec). No implementation until "APPROVED: build".
 **Locked decisions (from brainstorm):** daily-drip scheduling · in-flight + ETA visibility ·
-daily email digest · one-way (you → her) first, replies deferred but data-model-ready.
+daily email digest · one-way (author → recipient) first, replies deferred but data-model-ready.
 
 ---
 
@@ -19,44 +18,45 @@ daily email digest · one-way (you → her) first, replies deferred but data-mod
 
 | Option | Note |
 | --- | --- |
-| **«Голубиная почта» / "Pigeon Post"** *(recommended)* | Direct, warm, matches her phrase. Works in RU + EN. |
+| **«Голубиная почта» / "Pigeon Post"** *(recommended)* | Direct, warm, matches the origin request. Works in RU + EN. |
 | **«Голубь» / "Golub"** | One word — the pigeon itself. Intimate, simple. |
 | **"The Loft"** | The pigeon's home; doubles as your authoring space. |
 
-App surface/copy can stay bilingual-friendly (her phrase was Russian).
+App surface/copy can stay bilingual-friendly (the original request was in Russian).
 
 ---
 
 ## 1. Product Spec
 
-**Problem.** Amira will spend days on a road trip with little/no connectivity; you'll both
-miss each other. She asked — playfully but for real — to receive *letters by pigeon*. There's
+**Problem.** The recipient will spend days on a road trip with little/no connectivity; you'll
+both miss each other. They asked — playfully but for real — to receive *letters by pigeon*. There's
 no web-native, romantic, **offline-friendly** way to deliver scheduled, surprise love letters
 that feel like a *gift*, not a chat app.
 
 **Target users.**
-- **Amira (recipient).** Opens a secret link on her phone. Intermittently online. Wants delight
+- **The recipient.** Opens a secret link on their phone. Intermittently online. Wants delight
   + comfort. Zero setup, no login, no accounts.
 - **You (author/sender).** Pre-write and schedule letters, ideally from your phone. Want it to
   feel magical and be effortless to run.
 
 **Core user stories.**
-1. As the author, I can write and schedule a sequence of letters before she leaves, so one
-   arrives each morning of her trip.
-2. As Amira, when I open my secret link, I see which pigeons have landed and can read them with
-   a delightful animation.
-3. As Amira, I can see a pigeon is *on its way* and roughly when it lands — something to look
-   forward to.
-4. As Amira, I can revisit every letter I've received in my mailbox, **even with no internet.**
-5. As Amira, I get a gentle daily email nudge when letters are waiting, so I remember to check
-   when I find signal.
+1. As the author, I can write and schedule a sequence of letters before the recipient leaves, so
+   one arrives each morning of their trip.
+2. As the recipient, when I open my secret link, I see which pigeons have landed and can read
+   them with a delightful animation.
+3. As the recipient, I can see a pigeon is *on its way* and roughly when it lands — something to
+   look forward to.
+4. As the recipient, I can revisit every letter I've received in my mailbox, **even with no
+   internet.**
+5. As the recipient, I get a gentle daily email nudge when letters are waiting, so I remember to
+   check when I find signal.
 
 **Delight moments (where the magic lives).**
 - **The arrival ceremony** — a pigeon glides in, a peony wax seal breaks, the letter unfolds, and
   your words appear as if being written.
-- **Offline re-reading** — your words in her pocket in the middle of nowhere.
+- **Offline re-reading** — your words in their pocket in the middle of nowhere.
 - **Anticipation** — "a pigeon is on its way."
-- **Personal touches** — peonies (her favorite), golden-hour warmth, her name, handwriting feel.
+- **Personal touches** — peonies, golden-hour warmth, the recipient's name, handwriting feel.
 
 **Non-goals / out of scope (MVP).**
 - No accounts, signup, passwords, social features, or multi-user UI.
@@ -73,9 +73,9 @@ that feel like a *gift*, not a chat app.
 ### MVP
 
 **F1 — Secret-link access (no login).**
-- Given a valid recipient token in the URL, When Amira opens it, Then she sees her mailbox with
-  no login step.
-- Given an invalid/missing token, When the page loads, Then she sees a gentle "this link isn't
+- Given a valid recipient token in the URL, When the recipient opens it, Then they see their
+  mailbox with no login step.
+- Given an invalid/missing token, When the page loads, Then they see a gentle "this link isn't
   quite right" state and **no letter data is exposed**.
 
 **F2 — Author Loft (compose + schedule a journey).**
@@ -86,29 +86,29 @@ that feel like a *gift*, not a chat app.
   "delivered" and cannot be un-sent.
 
 **F3 — In-flight + ETA.**
-- Given letters with `arrive_at` in the future, When Amira opens her mailbox, Then she sees them
-  as "in flight" with a relative ETA ("landing tomorrow morning") and **cannot read the body**
-  (server withholds it).
+- Given letters with `arrive_at` in the future, When the recipient opens their mailbox, Then they
+  see them as "in flight" with a relative ETA ("landing tomorrow morning") and **cannot read the
+  body** (server withholds it).
 
 **F4 — Landing + arrival ceremony.**
-- Given a letter with `arrive_at ≤ now` and `read_at` null, When Amira opens her mailbox, Then it
-  appears as a newly-landed pigeon.
-- When she taps it, Then the GSAP arrival ceremony plays and the letter body is revealed.
-- When the ceremony completes or she taps to skip, Then `read_at` is set.
+- Given a letter with `arrive_at ≤ now` and `read_at` null, When the recipient opens their
+  mailbox, Then it appears as a newly-landed pigeon.
+- When they tap it, Then the GSAP arrival ceremony plays and the letter body is revealed.
+- When the ceremony completes or they tap to skip, Then `read_at` is set.
 
 **F5 — Growing mailbox keepsake.**
-- Given previously-read letters, When Amira opens her mailbox, Then she sees them newest-first and
-  can re-open and re-read any of them.
+- Given previously-read letters, When the recipient opens their mailbox, Then they see them
+  newest-first and can re-open and re-read any of them.
 
 **F6 — Offline re-read (PWA).**
-- Given she opened the app online at least once and read letters, When she's later offline, Then
-  she can re-open the cached app and re-read previously-loaded letters.
-- Given she's offline and new letters haven't been fetched, When she opens the app, Then she sees
-  a clear "waiting for a signal to fetch new pigeons" state (no crash).
+- Given they opened the app online at least once and read letters, When they're later offline,
+  Then they can re-open the cached app and re-read previously-loaded letters.
+- Given they're offline and new letters haven't been fetched, When they open the app, Then they
+  see a clear "waiting for a signal to fetch new pigeons" state (no crash).
 
 **F7 — Daily email digest.**
-- Given Amira has ≥1 landed-unread letter, When the daily cron runs, Then she receives at most one
-  "pigeons are waiting 🕊️" email that day.
+- Given the recipient has ≥1 landed-unread letter, When the daily cron runs, Then they receive at
+  most one "pigeons are waiting 🕊️" email that day.
 - Given zero landed-unread letters, When the cron runs, Then no email is sent.
 
 **F8 — Aesthetic & motion baseline.**
@@ -118,9 +118,9 @@ that feel like a *gift*, not a chat app.
   (cross-dissolve) plays instead.
 
 ### Later (post-MVP, separate cycle)
-- Reply pigeons (her → you) · photo attachments (Vercel Blob) → voice notes · spontaneous
+- Reply pigeons (recipient → you) · photo attachments (Vercel Blob) → voice notes · spontaneous
   "express pigeon" · sealed-teaser countdown variant · web push for installed PWA · map/sky flight
-  visualization along her route.
+  visualization along the recipient's route.
 
 ---
 
@@ -136,14 +136,14 @@ that feel like a *gift*, not a chat app.
 | Email | **Resend** free tier (3,000/mo · 100/day · 1 domain) | Confirmed free; ample headroom; Vercel-friendly. |
 | Scheduling | **Vercel Cron** once/day → `/api/cron/digest` | Reveal is view-time computed, so cron is *only* the nudge; once/day is the Hobby limit and exactly enough. Fallback: GitHub Actions scheduled workflow. |
 | Offline | Web App Manifest + service worker (Serwist) + **IndexedDB** letter cache | Her offline reality — re-read with zero signal. |
-| Access | Two unguessable tokens: **recipient** (her link) + **author** (your Loft), stored **hashed** | No login, low-stakes, but never store raw tokens. |
+| Access | Two unguessable tokens: **recipient** (their link) + **author** (your Loft), stored **hashed** | No login, low-stakes, but never store raw tokens. |
 | Time | Store UTC; render relative ETAs; "morning" anchored to a configured recipient timezone | Predictable; survives travel across timezones "well enough". |
 
 ### Data model (Drizzle / Postgres)
 
 ```
 recipients (id, name, email, timezone, token_hash, created_at)
-  -- MVP: a single row (Amira). Table generalizes for later.
+  -- MVP: a single row (the recipient). Table generalizes for later.
 
 journeys   (id, recipient_id → recipients, title, start_date, created_at)
   -- one trip / one drip sequence.
@@ -186,7 +186,7 @@ Vercel (host + cron) · Neon (Postgres) · Resend (email) · (later) Vercel Blob
 
 **The "pigeon delivery" mechanism — timing, state, animation**
 - **Timing.** Each letter has `depart_at` (sent) and `arrive_at` (scheduled landing, e.g. 08:00
-  her-tz on day _n_).
+  recipient-tz on day _n_).
 - **State (derived, not stored):**
   - `in_flight` — `now < arrive_at` → shown with ETA, **body withheld by the server**.
   - `landed_unread` — `arrive_at ≤ now` and `read_at` null → triggers the ceremony.
@@ -222,13 +222,13 @@ Vercel (host + cron) · Neon (Postgres) · Resend (email) · (later) Vercel Blob
 
 | # | Milestone | Size | Ships (demo) | Verifies |
 | --- | --- | --- | --- | --- |
-| **M0** | Scaffold & deploy skeleton | S | Next.js+TS+Tailwind, GSAP installed (per gsap-skills), Neon connected, **live on Vercel via CLI** — a styled golden-hour placeholder. | Loads on her phone. |
+| **M0** | Scaffold & deploy skeleton | S | Next.js+TS+Tailwind, GSAP installed (per gsap-skills), Neon connected, **live on Vercel via CLI** — a styled golden-hour placeholder. | Loads on the recipient's phone. |
 | **M1** | Data + author Loft | M | Drizzle schema; author-token Loft to create a journey and write/schedule letters (one per morning). | F2 |
 | **M2** | Recipient mailbox: Sky + landed | M | `/m/‹token›`; server categorizes; in-flight shows ETA (body withheld); landed opens (basic read) → sets `read_at`; mailbox lists read letters. | F1, F3, F4(basic), F5 |
 | **M3** | The arrival ceremony | L | Full GSAP timeline (sky → pigeon MotionPath → peony seal → unfold → SplitText → petals), reduced-motion fallback, tap-to-skip. | F4, F8 |
 | **M4** | Offline PWA | M | Manifest + SW + IndexedDB cache; offline re-read; "waiting for signal" state. | F6 |
 | **M5** | Daily email digest | S | Resend + `/api/cron/digest` + vercel cron (once/day) + email template. | F7 |
-| **M6** | Polish & real content | S/M | Final aesthetic pass (grain, type, peony art, microcopy, her name); you write the real journey; set her tz + email; generate her secret link; end-to-end smoke test; ship. | All; ready to send. |
+| **M6** | Polish & real content | S/M | Final aesthetic pass (grain, type, peony art, microcopy, recipient's name); you write the real journey; set the recipient's tz + email (`RECIPIENT_NAME`, `RECIPIENT_TZ`); generate their secret link; end-to-end smoke test; ship. | All; ready to send. |
 
 *Post-MVP (separate cycle):* reply pigeons · photo/voice attachments · express pigeon · web push ·
 route/map flight viz.
@@ -254,8 +254,8 @@ route/map flight viz.
 **Open decisions for you**
 1. **Name** — pick from §0.
 2. **Domain** — own/want a free subdomain (nicer email + URL), or use default `*.vercel.app`?
-3. **Her timezone & email** — needed at M6 (not blocking earlier).
-4. **"Morning" landing time** — default **08:00** her tz, OK?
+3. **Recipient timezone & email** — needed at M6 (not blocking earlier); set via `RECIPIENT_TZ` / `RECIPIENT_EMAIL`.
+4. **"Morning" landing time** — default **08:00** in the recipient's tz (`RECIPIENT_TZ`, fallback UTC), OK?
 5. **Trip length / number of letters** — shapes the journey composer defaults.
 6. **Letter typography** — handwriting vs elegant serif (I'll show options in M3).
 

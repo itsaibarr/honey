@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { and, isNull, lte } from "drizzle-orm";
 import { getDb } from "@/lib/db";
-import { letters } from "@/lib/db/schema";
+import { letters, recipients } from "@/lib/db/schema";
 import { sendDigest } from "@/lib/email";
 
 export const dynamic = "force-dynamic";
@@ -35,10 +35,12 @@ export async function GET(request: Request) {
 
   if (count === 0) return NextResponse.json({ count: 0, sent: false });
 
-  const email = process.env.RECIPIENT_EMAIL;
+  // Prefer the recipients.email column written by db:setup; fall back to env.
+  const [rec] = await db.select().from(recipients).limit(1);
+  const email = rec?.email ?? process.env.RECIPIENT_EMAIL;
   const link = process.env.RECIPIENT_URL || process.env.APP_BASE_URL || "";
   if (!email) {
-    return NextResponse.json({ count, sent: false, reason: "no RECIPIENT_EMAIL" });
+    return NextResponse.json({ count, sent: false, reason: "no recipient email" });
   }
 
   const res = await sendDigest({ email, count, link });

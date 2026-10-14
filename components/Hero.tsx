@@ -11,7 +11,7 @@ gsap.registerPlugin(useGSAP);
  * React 19 integration end-to-end (timeline entrance, perpetual float, and a
  * reduced-motion branch) — the same machinery the M3 arrival ceremony will use.
  */
-export default function Hero() {
+export default function Hero({ recipientName }: { recipientName: string }) {
   const root = useRef<HTMLElement>(null);
 
   useGSAP(
@@ -70,7 +70,7 @@ export default function Hero() {
       </p>
 
       <p className="hero-note legible font-hand text-2xl text-peony sm:text-3xl">
-        для Амиры · скоро
+        для {recipientName} · скоро
       </p>
     </main>
   );
